@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:message_board_app/boards.dart';
+import 'package:message_board_app/settings.dart';
+import 'package:message_board_app/widgets/appbar.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -10,6 +13,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   //controllers for text inputs
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
@@ -30,7 +34,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       final userId = FirebaseAuth.instance.currentUser?.uid;
       if (userId != null) {
-        final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .get();
         if (userDoc.exists) {
           final userData = userDoc.data();
           _firstNameController.text = userData?['firstName'] ?? '';
@@ -44,6 +51,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _isLoading = false;
     });
   }
+
   //save profile function
   Future<void> _saveProfile() async {
     setState(() {
@@ -53,7 +61,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       //save to user collection
       final userId = FirebaseAuth.instance.currentUser?.uid;
       if (userId != null) {
-        await FirebaseFirestore.instance.collection('users').doc(userId).update({
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .update({
           'firstName': _firstNameController.text.trim(),
           'lastName': _lastNameController.text.trim(),
         });
@@ -74,9 +85,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile' , style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFF2193b0),
+      key: _scaffoldKey,
+      appBar: CustomAppBar(
+        title: 'Profile',
+        scaffoldKey: _scaffoldKey,
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Color(0xFF2193b0)),
+              child: Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.dashboard),
+              title: const Text('Message Boards'),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const MessageBoardsScreen(),
+                  ),
+                );
+              },
+              
+            ),
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Profile'),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Settings'),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const SettingsScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -94,7 +158,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     decoration: const InputDecoration(labelText: 'Last Name'),
                   ),
                   const SizedBox(height: 12),
-                
                   const SizedBox(height: 24),
                   SizedBox(
                     width: double.infinity,

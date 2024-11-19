@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:message_board_app/widgets/appbar.dart';
 import 'chat.dart';
 import 'profile.dart';
 import 'settings.dart';
@@ -8,6 +9,8 @@ class MessageBoardsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
     //hardcoded boards
     final boards = [
       {'name': 'Gaming', 'icon': Icons.games_outlined},
@@ -18,56 +21,45 @@ class MessageBoardsScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Message Boards',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: const Color(0xFF2193b0),
+      key: _scaffoldKey,
+       appBar: CustomAppBar(
+        title: 'Message Boards',
+        scaffoldKey: _scaffoldKey,
       ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            //navigation btn
             const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Color(0xFF2193b0),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    'Menu',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  
-                ],
+              decoration: BoxDecoration(color: Color(0xFF2193b0)),
+              child: Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-
             ListTile(
               leading: const Icon(Icons.dashboard),
               title: const Text('Message Boards'),
-              onTap: () {
-                Navigator.pop(context);
+                onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                  builder: (context) => const MessageBoardsScreen(),
+                  ),
+                );
               },
             ),
             ListTile(
               leading: const Icon(Icons.person),
               title: const Text('Profile'),
               onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
+               Navigator.of(context).push(
+                  MaterialPageRoute(
+                  builder: (context) => const ProfileScreen(),
+                  ),
                 );
               },
             ),
@@ -75,8 +67,10 @@ class MessageBoardsScreen extends StatelessWidget {
               leading: const Icon(Icons.settings),
               title: const Text('Settings'),
               onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const SettingsScreen()),
+               Navigator.of(context).push(
+                  MaterialPageRoute(
+                  builder: (context) => const SettingsScreen(),
+                  ),
                 );
               },
             ),

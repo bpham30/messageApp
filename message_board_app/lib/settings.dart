@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:message_board_app/boards.dart';
+import 'package:message_board_app/profile.dart';
+import 'package:message_board_app/widgets/appbar.dart';
 import 'auth.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -11,8 +14,10 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   //dob input
-  DateTime? _selectedDate; 
+  DateTime? _selectedDate;
   bool _isLoading = false;
 
   @override
@@ -23,36 +28,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   //get userdata from collection
   Future<void> _loadDOB() async {
-  setState(() {
-    _isLoading = true;
-  });
-  try {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId != null) {
-      final userDoc =
-          await FirebaseFirestore.instance.collection('users').doc(userId).get();
-      if (userDoc.exists) {
-        final dobData = userDoc.data()?['dob'];
-        if (dobData != null) {
-          if (dobData is Timestamp) {
-            // If stored as Firestore Timestamp
-            _selectedDate = dobData.toDate();
-          } else if (dobData is String) {
-            // If stored as ISO8601 String
-            _selectedDate = DateTime.parse(dobData);
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId != null) {
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .get();
+        if (userDoc.exists) {
+          final dobData = userDoc.data()?['dob'];
+          if (dobData != null) {
+            if (dobData is Timestamp) {
+              // If stored as Firestore Timestamp
+              _selectedDate = dobData.toDate();
+            } else if (dobData is String) {
+              // If stored as ISO8601 String
+              _selectedDate = DateTime.parse(dobData);
+            }
           }
         }
       }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load Date of Birth: $e')),
+      );
     }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Failed to load Date of Birth: $e')),
-    );
+    setState(() {
+      _isLoading = false;
+    });
   }
-  setState(() {
-    _isLoading = false;
-  });
-}
 
   //save dob to collection
   Future<void> _saveDOB() async {
@@ -156,9 +163,61 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings' , style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFF2193b0),
+      key: _scaffoldKey,
+      appBar: CustomAppBar(
+        title: 'Settings',
+        scaffoldKey: _scaffoldKey,
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Color(0xFF2193b0)),
+              child: Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.dashboard),
+              title: const Text('Message Boards'),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const MessageBoardsScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Profile'),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Settings'),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const SettingsScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -173,7 +232,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       const Text(
                         'Date of Birth:',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       TextButton(
                         onPressed: _pickDate,
@@ -181,7 +241,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           _selectedDate == null
                               ? 'Select Date'
                               : '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}',
-                          style: const TextStyle(fontSize: 16, color: Color(0xFF2193b0)),
+                          style: const TextStyle(
+                              fontSize: 16, color: Color(0xFF2193b0)),
                         ),
                       ),
                     ],

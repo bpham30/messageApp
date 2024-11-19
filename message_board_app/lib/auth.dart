@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'home.dart';
+import 'package:message_board_app/boards.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -33,6 +33,7 @@ class _AuthScreenState extends State<AuthScreen> {
     _lastNameController.dispose();
     super.dispose();
   }
+
   //authenticate user
   Future<void> _authenticate() async {
     try {
@@ -56,7 +57,7 @@ class _AuthScreenState extends State<AuthScreen> {
             'userId': userId,
             'firstName': _firstNameController.text.trim(),
             'lastName': _lastNameController.text.trim(),
-            'role': 'user', 
+            'role': 'user',
             'registrationDate': DateTime.now(),
           });
         }
@@ -64,7 +65,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
       //navigate to home screen
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => const MessageBoardsScreen()),
       );
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -77,6 +78,7 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           _isLogin ? 'Login' : 'Sign Up',
           style: const TextStyle(
@@ -124,7 +126,6 @@ class _AuthScreenState extends State<AuthScreen> {
               keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 12),
-
             TextField(
               controller: _passwordController,
               decoration: const InputDecoration(
@@ -140,11 +141,10 @@ class _AuthScreenState extends State<AuthScreen> {
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
                   _errorMessage,
-                  style: const TextStyle(color:  Color(0xFF2193b0)),
+                  style: const TextStyle(color: Color(0xFF2193b0)),
                 ),
               ),
             const SizedBox(height: 12),
-
             SizedBox(
               width: double.infinity,
               height: 50,
@@ -174,7 +174,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 _isLogin
                     ? "Don't have an account? Sign up"
                     : 'Already have an account? Log in',
-                style: const TextStyle(color:  Color(0xFF2193b0)),
+                style: const TextStyle(color: Color(0xFF2193b0)),
               ),
             ),
           ],

@@ -15,8 +15,8 @@ class SplashScreen extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF2193b0), // Light Blue
-              Color(0xFF6dd5ed), // Sky Blue
+              Color(0xFF2193b0), 
+              Color(0xFF6dd5ed), 
             ],
           ),
         ),
@@ -62,9 +62,9 @@ class SplashScreen extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                // Navigator.of(context).pushReplacement(
-                //   MaterialPageRoute(builder: (context) => AuthScreen()),
-                // );
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => AuthScreen()),
+                );
               },
               child: const Text(
                 'Find Your Community',

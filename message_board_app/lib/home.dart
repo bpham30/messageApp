@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:message_board_app/boards.dart';
 import 'auth.dart';
+import 'boards.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -39,7 +41,7 @@ class HomeScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color:  Color(0xFF2193b0),
+                color: Color(0xFF2193b0),
               ),
               textAlign: TextAlign.center,
             ),
@@ -58,13 +60,16 @@ class HomeScreen extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:  Color(0xFF2193b0),
+                  backgroundColor: const Color(0xFF2193b0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 onPressed: () {
-                  // Navigate to Message Boards list
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => const MessageBoardsScreen()),
+                  );
                 },
                 child: const Text(
                   'Explore Boards',

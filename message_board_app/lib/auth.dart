@@ -163,8 +163,6 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
             ),
             const SizedBox(height: 24),
-
-            // Toggle Login/Signup Text Button
             TextButton(
               onPressed: () {
                 setState(() {
